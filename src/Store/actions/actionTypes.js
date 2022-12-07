@@ -1,2 +1,5 @@
 export const USER_LOGIN = `USER_LOGIN`
 export const GET_BLOG_DATA = `GET_BLOG_DATA`
+export const POST_BLOG_DETAIL = `POST_BLOG_DETAIL`
+export const GET_LOGIN_DATA = `GET_LOGIN_DATA`
+export const GET_CHAT_DETAIL = `GET_CHAT_DETAIL`
