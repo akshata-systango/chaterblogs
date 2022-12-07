@@ -3,8 +3,9 @@ import { styled } from '@mui/material/styles';
 import { Avatar, Badge, Box, Button, TextareaAutosize } from '@mui/material';
 import { useLocation } from 'react-router-dom';
 import './blogs.css';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getBlogDetails, postblogsDetails } from '../../Store/actions/actions';
+import BlogTable from './BlogTable';
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
     '& .MuiBadge-badge': {
@@ -37,21 +38,22 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 const BlogArea = () => {
     const dispatch = useDispatch();
+    const location = useLocation();
+    const state = useSelector(state => state);
+    const blogData = state?.reducers?.blogDetails?.blogs;
     let [bloginDetails, setbloginDetail] = useState({
         blogMessage: '',
         userName: ''
     });
-    const location = useLocation();
     let userName = location ? location?.state?.username : 'No User'
-    // const loginDetails = useDispatch(getLoginDetails());
-    // const blogDetails = dispatch(getBlogDetails());
-    // console.log(blogDetails, 'blogDetails');
+    useEffect(() => { dispatch(getBlogDetails) }, [bloginDetails]);
     const onchangeHandler = (event) => {
         setbloginDetail({ blogMessage: event.target.value, userName: userName })
     }
     const submitHandler = (event) => {
         event.preventDefault();
-        dispatch(postblogsDetails(bloginDetails))
+        dispatch(postblogsDetails(bloginDetails));
+        dispatch(getBlogDetails)
     }
     return (
         <>
@@ -102,7 +104,10 @@ const BlogArea = () => {
                     marginLeft: '100px',
                     backgroundColor: 'primary.dark',
                 }}>
-
+                    <p style={{ color: 'white' }}>Details</p>
+                    <BlogTable
+                        rows={blogData?.length ? blogData : []}
+                    />
                 </Box>
             </div>
         </>

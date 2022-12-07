@@ -1,9 +1,15 @@
-import { Box, Button, Card, TextField } from '@mui/material';
-import { styled } from '@mui/system';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+
+import { ADMIN_LOGIN_EMAIL, ADMIN_ROLE, ADMIN_USERNAME } from '../../constants/constants';
 import { postLoginDetails } from '../../Store/actions/actions';
+
+import { Box, Button, Card, TextField, useMediaQuery, DialogTitle, DialogContentText, DialogContent, DialogActions, Dialog } from '@mui/material';
+import { styled } from '@mui/system';
+import { useTheme } from '@mui/material/styles';
+
+
 import pencil_animate_image from '../../assets/gifs/pencil_gifs.gif';
 import './blogs.css';
 
@@ -18,18 +24,42 @@ const MyComponent = styled('div')({
 const Blogs = () => {
     const dispatch = useDispatch();
     const nevigate = useNavigate();
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
     let [loginDetails, setLoginDetail] = useState();
+    const [open, setOpen] = React.useState(false);
+
     const onChangeHandler = (event) => {
         setLoginDetail({ ...loginDetails, [event.target.name]: event.target.value })
     }
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     const loginSubmitHandler = (event) => {
+        debugger;
         event.preventDefault();
-        nevigate('/blog_area', {
-            state: loginDetails
-        })
-        if (loginDetails !== '') {
-            dispatch(postLoginDetails(loginDetails))
+        console.log(loginDetails, 'loginDetails');
+        if (loginDetails?.username === ADMIN_USERNAME && loginDetails?.email === ADMIN_LOGIN_EMAIL && loginDetails?.role === ADMIN_ROLE) {
+            nevigate('/blog_area', {
+                state: loginDetails
+            })
+            if (loginDetails !== '') {
+                dispatch(postLoginDetails(loginDetails))
+            }
+        }
+        else {
+            handleClickOpen();
+            setLoginDetail({
+                username: '',
+                email: '',
+                role: ''
+            });
         }
     }
 
@@ -45,6 +75,7 @@ const Blogs = () => {
                 }}>
                 Want to write something ? why don't you try blogs...
             </Box>
+            <Button variant="text" style={{ color: '#ed6c02' }} href="/popular_blogs">Polpular Blogs</Button>
             <Box
                 sx={{
                     width: 1500,
@@ -64,10 +95,59 @@ const Blogs = () => {
                 <div className='login_card_container'>
                     <Card variant="outlined" className='login_form_container'>
                         <MyComponent>LOGIN</MyComponent>
-                        <TextField id="standard-basic" type='text' label="Username" name="username" variant="standard" onChange={onChangeHandler} />
-                        <TextField id="standard-basic" type='email' label="Email" name='email' variant="standard" onChange={onChangeHandler} />
-                        <TextField id="standard-basic" label="Role" name='role' variant="standard" onChange={onChangeHandler} />
-                        <Button variant="contained" style={{ background: '#ed6c02', marginTop: '20px', marginBottom: '20px' }} onClick={(e) => loginSubmitHandler(e)}>Go</Button>
+                        <TextField
+                            id="standard-basic"
+                            type='text'
+                            label="Username"
+                            name="username"
+                            variant="standard"
+                            onChange={onChangeHandler}
+                            value={loginDetails?.username}
+                        />
+                        <TextField
+                            id="standard-basic"
+                            type='email'
+                            label="Email"
+                            name='email'
+                            variant="standard"
+                            onChange={onChangeHandler}
+                            value={loginDetails?.email}
+                        />
+                        <TextField
+                            id="standard-basic"
+                            label="Role"
+                            name='role'
+                            variant="standard"
+                            onChange={onChangeHandler}
+                            value={loginDetails?.role}
+                        />
+                        <Button
+                            variant="contained"
+                            style={{ background: '#ed6c02', marginTop: '20px', marginBottom: '20px' }}
+                            onClick={(e) => loginSubmitHandler(e)}
+                        >
+                            Go
+                        </Button>
+                        <Dialog
+                            fullScreen={fullScreen}
+                            open={open}
+                            onClose={handleClose}
+                            aria-labelledby="responsive-dialog-title"
+                        >
+                            <DialogTitle id="responsive-dialog-title">
+                                {"Wrong Credentials??"}
+                            </DialogTitle>
+                            <DialogContent>
+                                <DialogContentText>
+                                    Something went wrong !! Please try again later.
+                                </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleClose} autoFocus>
+                                    Okay
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
                     </Card>
 
                 </div>
