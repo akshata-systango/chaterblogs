@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-
-// import Box from '@material-ui/core/Box';
 import {
     Divider,
     TextField,
@@ -16,8 +14,8 @@ import {
     Grid
 } from '@material-ui/core';
 import SendIcon from '@material-ui/icons/Send';
-import { useDispatch } from 'react-redux';
-import { postChatDetails } from '../../Store/actions/actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { getChatDetails, postChatDetails } from '../../Store/actions/actions';
 
 const useStyles = makeStyles({
     table: {
@@ -41,13 +39,19 @@ const useStyles = makeStyles({
 
 const Chat = () => {
     const dispatch = useDispatch();
+    const classes = useStyles();
+
     const [chatDetail, setChatDetail] = useState({
         userName: '',
         chatMessage: '',
         time: ''
     });
     const [name, setName] = useState('Admin')
-    const classes = useStyles();
+    const [isChatSended, setIsChatSended] = useState(false)
+
+    const state = useSelector(state => state)
+    const chats = state.reducers.chatDetails.chats;
+    const isChatFetched = state.reducers.chatDetails.isChatFetched
     const onChangeHandler = (event) => {
         setChatDetail({ ...chatDetail, chatMessage: event.target.value, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) })
     }
@@ -59,9 +63,13 @@ const Chat = () => {
         dispatch(postChatDetails({
             username: name,
             message: chatDetail.chatMessage,
-            time: chatDetail.time
+            time: chatDetail.time,
+            chatSended: true
         }))
+        setIsChatSended(true)
+        dispatch(getChatDetails)
     }
+    useEffect(() => { dispatch(getChatDetails) }, [])
     return (
         <div>
             <Grid container>
@@ -85,29 +93,32 @@ const Chat = () => {
                     </Grid>
                     <Divider />
                 </Grid>
-                <Grid item xs={9}>
-                    <List className={classes.messageArea}>
-                        <ListItem key="2">
-                            <Grid container>
-                                <Grid item xs={12}>
-                                    <ListItemText align="left" primary="Hey, Iam Good! What about you ?"></ListItemText>
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <ListItemText align="left" secondary="09:31"></ListItemText>
-                                </Grid>
-                            </Grid>
-                        </ListItem>
-                        <ListItem key="1">
-                            <Grid container>
-                                <Grid item xs={12}>
-                                    <ListItemText align="right" primary="Hey man, What's up ?"></ListItemText>
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <ListItemText align="right" secondary="09:30"></ListItemText>
-                                </Grid>
-                            </Grid>
-                        </ListItem>
-                    </List>
+                < Grid item xs={9}>
+                    {Object.values(chats).map((key, value) => {
+                        return (
+                            <List className={classes.messageArea} key={value} >
+                                {key?.username === 'Admin' ? <ListItem key="2">
+                                    <Grid container>
+                                        <Grid item xs={12}>
+                                            <ListItemText align="left" primary={key?.message}></ListItemText>
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <ListItemText align="left" secondary={key?.time}></ListItemText>
+                                        </Grid>
+                                    </Grid>
+                                </ListItem>
+                                    : <ListItem key="1">
+                                        <Grid container>
+                                            <Grid item xs={12}>
+                                                <ListItemText align="right" primary="Hey man, What's up ?"></ListItemText>
+                                            </Grid>
+                                            <Grid item xs={12}>
+                                                <ListItemText align="right" secondary="09:30"></ListItemText>
+                                            </Grid>
+                                        </Grid>
+                                    </ListItem>}
+                            </List>)
+                    })}
                     {/* <Divider /> */}
                     <Grid container style={{ padding: '20px' }}>
                         <Grid item xs={11}>
@@ -119,7 +130,7 @@ const Chat = () => {
                     </Grid>
                 </Grid>
             </Grid>
-        </div>
+        </div >
     );
 }
 

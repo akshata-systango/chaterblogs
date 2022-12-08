@@ -1,7 +1,7 @@
 import React from 'react';
-import { Suspense, lazy } from 'react';
+import { lazy } from 'react';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
-import BlogArea from '../Components/Blogs/BlogArea';
+const BlogArea = lazy(() => import('../Components/Blogs/BlogArea'));
 const PopularBlogs = lazy(() => import('../Components/Blogs/PopularBlogs'));
 const Chat = lazy(() => import('../Components/Chat/DisplayChat'))
 const Blogs = lazy(() => import('../Components/Blogs/index'))

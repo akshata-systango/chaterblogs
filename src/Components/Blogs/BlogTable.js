@@ -1,55 +1,77 @@
 import * as React from 'react';
-import { styled } from '@mui/material/styles';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-        backgroundColor: theme.palette.common.black,
-        color: theme.palette.common.white,
-    },
-    [`&.${tableCellClasses.body}`]: {
-        fontSize: 14,
-    },
-}));
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-    '&:nth-of-type(odd)': {
-        backgroundColor: theme.palette.action.hover,
-    },
-    // hide last border
-    '&:last-child td, &:last-child th': {
-        border: 0,
-    },
-}));
-
+import {
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TablePagination,
+    TableRow
+} from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { deleteChatDetails, getBlogDetails } from '../../Store/actions/actions';
+import { useDispatch } from 'react-redux';
 
 export default function BlogTable({ rows }) {
+    const dispatch = useDispatch();
+    const [page, setPage] = React.useState(0);
+    const [dataCount, setDataCount] = React.useState();
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(+event.target.value);
+        setPage(0);
+    };
+
+    const onBlogItemDeletion = (id) => {
+        deleteChatDetails(id)
+        dispatch(getBlogDetails)
+        dispatch(getBlogDetails)
+    }
     return (
-        <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 500, maxHeight: 500, overflowY: 'scroll' }} aria-label="customized table">
-                <TableHead>
-                    <TableRow>
-                        <StyledTableCell>S.No</StyledTableCell>
-                        <StyledTableCell align="center">Blog</StyledTableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {Object.values(rows).map((key, value) => (
-                        <StyledTableRow key={value}>
-                            <StyledTableCell component="th" scope="row">
-                                {value}
-                            </StyledTableCell>
-                            <StyledTableCell align="center">{key?.blogMessage}</StyledTableCell>
-                        </StyledTableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+        <Paper sx={{ width: '100%' }}>
+            <TableContainer sx={{ maxHeight: 440 }}>
+                <Table stickyHeader aria-label="sticky table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell align="center" colSpan={2}>
+                                <b> S.No</b>
+                            </TableCell>
+                            <TableCell align="center" colSpan={3}>
+                                <b>Blogs</b>
+                            </TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {Object.keys(rows)
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map((key, value) => {
+                                return (
+                                    <TableRow hover role="checkbox" tabIndex={-1} key={value}>
+                                        <TableCell align='center' colSpan={2}>{value + 1}</TableCell>
+                                        <TableCell key={value} align='center' colSpan={3}>
+                                            {rows[key]?.blogMessage}
+                                        </TableCell>
+                                        <TableCell align='center'> <DeleteIcon onClick={() => onBlogItemDeletion(key)} /></TableCell>
+                                    </TableRow>)
+                            })}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            <TablePagination
+                rowsPerPageOptions={[10, 25, 100]}
+                component="div"
+                count={Object.keys(rows).length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+        </Paper>
     );
 }

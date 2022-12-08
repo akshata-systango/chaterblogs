@@ -1,5 +1,5 @@
 import axios from "axios"
-import { GET_BLOG_DATA, GET_LOGIN_DATA, GET_CHAT_DETAIL } from './actionTypes'
+import { GET_BLOG_DATA, GET_LOGIN_DATA, GET_CHAT_DETAIL, POST_BLOG_DETAIL } from './actionTypes'
 const url = 'https://chaterblogs-default-rtdb.firebaseio.com/'
 
 // -----------------------------------------Login Detail APIs---------------------------------------------
@@ -20,8 +20,11 @@ export const getLoginDetails = async dispatch => {
 }
 
 //-------------------------------------------Blog Detail APIs-----------------------------------------------
-export const postblogsDetails = (data) => {
-    axios.post(url + 'blogs.json/', data)
+export const postblogsDetails = async (data, dispatch) => {
+    await axios.post(url + 'blogs.json/', data).then(response => dispatch({
+        type: POST_BLOG_DETAIL,
+        payload: response.data,
+    }))
 }
 
 export const getBlogDetails = async dispatch => {
@@ -33,6 +36,14 @@ export const getBlogDetails = async dispatch => {
         .catch(error => console.log(error, 'error'))
 }
 
+export const deleteChatDetails = (id) => {
+    axios.delete(url + `blogs/${id}.json`, {
+        header: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+        }
+    })
+}
 //-------------------------------------------Chat Detail APIs-----------------------------------------------
 export const postChatDetails = (data) => {
     axios.post(url + 'chatDetail.json/', data)

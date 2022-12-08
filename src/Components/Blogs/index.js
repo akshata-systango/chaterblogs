@@ -42,9 +42,7 @@ const Blogs = () => {
     };
 
     const loginSubmitHandler = (event) => {
-        debugger;
         event.preventDefault();
-        console.log(loginDetails, 'loginDetails');
         if (loginDetails?.username === ADMIN_USERNAME && loginDetails?.email === ADMIN_LOGIN_EMAIL && loginDetails?.role === ADMIN_ROLE) {
             nevigate('/blog_area', {
                 state: loginDetails
