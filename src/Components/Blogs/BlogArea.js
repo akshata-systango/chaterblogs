@@ -45,15 +45,21 @@ const BlogArea = () => {
         blogMessage: '',
         userName: ''
     });
+    let [isBlogSended, setIsBlogSended] = useState(false);
     let userName = location ? location?.state?.username : 'No User'
-    useEffect(() => { dispatch(getBlogDetails) }, [bloginDetails]);
+    useEffect(() => { dispatch(getBlogDetails) }, [isBlogSended]);
     const onchangeHandler = (event) => {
         setbloginDetail({ blogMessage: event.target.value, userName: userName })
     }
     const submitHandler = (event) => {
-        event.preventDefault();
+        setbloginDetail({
+            blogMessage: '',
+            userName: ''
+        })
+        // event.preventDefault();
         dispatch(postblogsDetails(bloginDetails));
-        dispatch(getBlogDetails)
+        dispatch(getBlogDetails);
+        setIsBlogSended(true)
     }
     return (
         <>
@@ -87,11 +93,18 @@ const BlogArea = () => {
                         <div className='username-area'>{userName?.toUpperCase()}</div>
                     </div>
                     <div>
-                        <TextareaAutosize
+                        {/* <TextareaAutosize
                             aria-label="minimum height"
                             minRows={20}
+                            defaultValue={bloginDetails?.blogMessage}
                             placeholder="Write your thoughts"
                             style={{ width: 450, marginTop: '30px' }}
+                            onChange={onchangeHandler}
+                        /> */}
+                        <textarea
+                            rows={22}
+                            cols={39}
+                            value={bloginDetails?.blogMessage}
                             onChange={onchangeHandler}
                         />
                     </div>
@@ -105,9 +118,11 @@ const BlogArea = () => {
                     backgroundColor: 'primary.dark',
                 }}>
                     <p style={{ color: 'white' }}>Details</p>
-                    <BlogTable
-                        rows={blogData?.length ? blogData : []}
-                    />
+                    <div style={{ marginTop: '40px' }}>
+                        <BlogTable
+                            rows={blogData ? blogData : []}
+                        />
+                    </div>
                 </Box>
             </div>
         </>

@@ -11,14 +11,12 @@ const reducers = (state = rootState, { type, payload }) => {
 
     switch (type) {
         case `${USER_LOGIN}`:
-            console.log(state, 'state', payload);
             return {
                 ...state,
                 isUserLoggedIn: true,
                 role: state.role
             }
         case `${GET_BLOG_DATA}`:
-            console.log(state, 'state', payload);
             return {
                 ...state,
                 blogDetails: {
@@ -32,7 +30,7 @@ const reducers = (state = rootState, { type, payload }) => {
                 ...state,
                 blogDetails: {
                     blogs: payload,
-                    isDetailFetched: true
+                    isDetailPosted: false,
                 }
             }
         case `${GET_CHAT_DETAIL}`:
@@ -40,7 +38,8 @@ const reducers = (state = rootState, { type, payload }) => {
                 ...state,
                 chatDetails: {
                     chats: payload,
-                    isChatFetched: true
+                    isDetailPosted: false,
+                    isChatFetched: payload?.chatSended
                 }
             }
         default:

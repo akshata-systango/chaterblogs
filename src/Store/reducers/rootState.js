@@ -11,6 +11,7 @@ const rootState = {
   },
   blogDetails: {
     isDetailFetched: false,
+    isDetailPosted: false,
     blogs: []
   },
   chatDetails: {
